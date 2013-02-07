@@ -20,45 +20,33 @@ limitations under the License.
 	left: 0px;
 	width: 100px;
 	height: 100px;
-	background-color: lightsteelblue;
+	background-color: #FAA;
 	position: absolute;
 }
 
+.testBox {
+  height: 650px;
+  left: 100px;
+}
+
 #a {
-	top: 0px;
-	left: 200px;
+	top: 50px
 }
 
 #b {
-	top: 100px;
-	left: 100px;
+	top: 150px;
 }
 
 #c {
-	top: 200px;
-	left: 0px;
+	top: 250px;
 }
 
 #d {
-	top: 300px;
-	left: 200px;
+	top: 350px;
 }
-
-.testBox {
-  height: 400px;
-}
-
 </style>
 
-<head>
-  <title>Test Animation Creation</title>
-  <link rel="author" title="Shane Stephens, Sarah Heimlich", href="mailto:shans@google.com, sarahheimlich@google.com">
-  <link rel="help" href="https://dvcs.w3.org/hg/FXTF/raw-file/tip/web-anim/index.html#animations">
-  <meta name="flags" content="dom">
-  <meta name="assert" content="Verify the objects move to the correct locations">
-</head>
-
-<div id="test" class = "testBox">
+<div id="test" class="testBox">
 	<div id="a" class="anim"></div>
 	<div id="b" class="anim"></div>
 	<div id="c" class="anim"></div>
@@ -76,14 +64,18 @@ limitations under the License.
 setupTests();
 
 var divs = document.querySelectorAll(".anim");
-var group = new ParGroup([], 2, undefined, 1);
-for (var i = 0; i < divs.length; i++) {
-	new Animation(divs[i], {left: (100 * (i+1)) + "px"}, 2, group);
-}
+new Animation(divs[0], {"-webkit-transform": ["translate(0px, 0px)", "translate(200px, 0px)"]}, 2);
+new Animation(divs[1], {"-webkit-transform": ["rotate(0deg)", "rotate(90deg)"]}, 2);
+new Animation(divs[2], {"-webkit-transform": ["translate(0px, 0px) rotate(0deg)", "translate(200px, 0px) rotate(90deg)"]}, 2);
+new Animation(divs[3], {"-webkit-transform": ["rotate(0deg) translate(0px, 0px)", "rotate(90deg) translate(200px, 0px)"]}, 2);
 
-for (var i = 0; i < divs.length; i++) {
-	check(divs[i], {"left":(100 * (i+1))+ "px"}, 3, "Test object "+i);
-}
+check(divs[0], {"-webkit-transform": "translate(0px, 0px)"}, 0, "Div 0 start");
+check(divs[0], {"-webkit-transform": "translate(200px, 0px)"}, 2, "Div 0 end");
+check(divs[1], {"-webkit-transform": "rotate(45deg)"}, 1, "Div 1 middle");
+check(divs[1], {"-webkit-transform": "rotate(90deg)"}, 2, "Div 1 end");
+
+check(divs[2], {"-webkit-transform": "translate(0px, 0px) rotate(0deg)"}, 0, "Div 2 start");
+check(divs[2], {"-webkit-transform": "translate(200px, 0px) rotate(90deg)"}, 2, "Div 2 end");
 
 runTests();
 </script>
