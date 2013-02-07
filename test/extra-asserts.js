@@ -15,17 +15,35 @@
  */
 
  /**
- * Features: Just the menu bars and the page structure
+ * Features:
+ *  - The menu bars and the page structure
+ *  - Tests can be created via check()
  */
 
 (function() {
 // Boolean flag for whether the program is running in automatic mode
 var runInAutoMode;
+//Each index holds all the tests that occur at the same time
+var testPacket = [];
+// The parGroup all animations need to be added to to achieve 'global' pause
+var parentAnimation;
 
 // How long it takes an individual test to timeout in millisecs.
-var testTimeout = 10000;
+var testTimeout = 1000;
 // How long it takes for the whole test system to timeout in millisecs.
-var frameworkTimeout = 20000;
+var frameworkTimeout = 2000;
+
+function testRecord(test, object, targets, time, message, cssStyle,
+                    offsets, isRefTest){
+  this.test = test;
+  this.object = object;
+  this.targets = targets;
+  this.time = time;
+  this.message = message;
+  this.cssStyle = cssStyle;
+  this.offsets = offsets;
+  this.isRefTest = isRefTest;
+}
 
 // Call this function before setting up any checks.
 // It generates the testing buttons and log and the testharness setup.
@@ -77,7 +95,51 @@ function setAutoMode(isAuto){
 
 // Adds each test to a list to be processed when runTests is called.
 function check(object, targets, time, message){
-  // TODO
+  if(testPacket.length == 0) reparent();
+  var test = async_test(message);
+  test.timeout_length = testTimeout;
+
+  // Store the inital css style of the animated object so it can be
+  // used for manual flashing.
+  var css = object.currentStyle || getComputedStyle(object, null);
+  var offsets = [];
+  offsets["top"] = getOffset(object).top - parseInt(css.top);
+  offsets["left"] = getOffset(object).left- parseInt(css.left);
+  if (targets.refTest == true){
+    var maxTime = document.animationTimeline.children[0].animationDuration;
+    // Generate a test for each time you want to check the objects.
+    for (var x = 0; x < maxTime/time; x++){
+      var temp = new testRecord(test, object, targets, time * x,
+          "Property " + targets + " is not satisfied", css, offsets, true);
+      testPacket.push(temp);
+    }
+    var temp = new testRecord(test, object, targets, time * x, "Property "
+        + targets + " is not satisfied", css, offsets, "Last refTest");
+    testPacket.push(temp);
+  } else testPacket.push(new testRecord(test, object, targets, time, "Property "
+        + targets + " is not satisfied", css, offsets, false));
+}
+
+// Helper function which gets the current absolute position of an object.
+// From http://tiny.cc/vpbtrw
+function getOffset(el) {
+    var x = 0;
+    var y = 0;
+    while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+        x += el.offsetLeft - el.scrollLeft;
+        y += el.offsetTop - el.scrollTop;
+        el = el.offsetParent;
+    }
+    return { top: y, left: x };
+}
+
+// Put all the animations into a par group to get around global pause issue.
+function reparent(){
+  var childList = [];
+  for (var i = 0; i < document.animationTimeline.children.length; i++) {
+    childList.push(document.animationTimeline.children[i]);
+  }
+  parentAnimation = new ParGroup(childList);
 }
 
 //Call this after lining up the tests with check
