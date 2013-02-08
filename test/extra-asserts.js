@@ -443,10 +443,9 @@ function assert_properties(test){
           });
         }
       }
-
     }
   }
-  //tempOb.remove();
+  tempOb.parentNode.removeChild(tempOb);
 }
 
 // Deals with the svg transforms special case.

@@ -73,7 +73,8 @@ function updateState(change) {
 }
 
 function reRunTests(){
-  document.getElementById("results").remove();
+  var t = document.getElementById("results");
+  t.parentNode.removeChild(t);
   newResults = document.createElement('div');
   newResults.id = "results";
   document.body.appendChild(newResults);
