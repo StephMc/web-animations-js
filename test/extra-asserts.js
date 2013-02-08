@@ -175,7 +175,7 @@ function runTests(){
   sortTests();
   if (state == "Manual"){
     // This causes no tests to start until 1 frame is rendered.
-    window.webkitRequestAnimationFrame(function(){ testRunner(); });
+    testRunner();
   } else {
     parentAnimation.pause();
     autoTestRunner();
@@ -446,7 +446,7 @@ function assert_properties(test){
 
     }
   }
-  tempOb.remove();
+  //tempOb.remove();
 }
 
 // Deals with the svg transforms special case.
