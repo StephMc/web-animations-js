@@ -438,8 +438,8 @@ function assert_properties(test){
         console.log(c);
         for (var x in t){
           test.test.step(function (){
-            assert_approx_equals(Number(c[x]), Number(t[x]), 12, message +
-                                 " " + x);
+            assert_approx_equals(Number(c[x]), Number(t[x]), 12, propName +
+                " is not correct. Target: " + t + " Current state: " + c);
           });
         }
       }
