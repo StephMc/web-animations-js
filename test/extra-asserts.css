@@ -22,3 +22,7 @@
 #padding {
 	height: 30px;
 }
+
+.flash {
+	display: none;
+}

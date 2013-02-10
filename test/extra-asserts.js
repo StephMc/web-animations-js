@@ -76,6 +76,10 @@ function setupTests(timeouts){
   optionBar.id = "options";
   var select = document.createElement("select");
   select.setAttribute("id", "runType");
+  var hideFlash = document.createElement("button");
+  hideFlash.setAttribute("type", "button");
+  hideFlash.setAttribute("onclick", "toggleFlash()");
+  hideFlash.innerHTML = "Toggle Flash";
   var button = document.createElement("button");
   button.setAttribute("type", "button");
   button.setAttribute("onclick", "restart()");
@@ -86,6 +90,7 @@ function setupTests(timeouts){
   document.body.appendChild(optionBar);
   document.getElementById("options").appendChild(select);
   document.getElementById("options").appendChild(button);
+  document.getElementById("options").appendChild(hideFlash);
   document.getElementById("options").appendChild(timeOfAnimation);
 
   // Generate the log div
@@ -302,6 +307,7 @@ function flashing(test) {
     flash.style.cssText = test.cssStyle.cssText;
     flash.style.position = "absolute";
     flash.innerHTML = test.object.innerHTML;
+    flash.className = "flash";
   } else {
     for (var x = 0; x < test.object.attributes.length; x++){
       flash.setAttribute(test.object.attributes[x].name,
@@ -380,6 +386,21 @@ function flashCleanUp(victim){
   }, pauseTime);
 }
 
+function toggleFlash(){
+  var elements = document.getElementsByClassName("flash");
+  if(elements[0] != null){
+    if (elements[0].style.display == 'block'){
+      for (var x in elements){
+        elements[x].style.display = 'none';
+      }
+    } else {
+      for (var x in elements){
+        elements[x].style.display = 'block';
+      }
+    }
+  }
+}
+
 add_completion_callback(function (allRes, status) {
     testResults = allRes;
     window.testResults = testResults;
@@ -392,6 +413,8 @@ function assert_properties(test){
   var object = test.object;
   var targets = test.targets;
   var message = test.message;
+  var time = document.animationTimeline.children[0].iterationTime;
+  if (time == null) time = 0;
 
   var isSVG = (object.nodeName != "DIV");
   var tempOb = document.createElement(object.nodeName);
@@ -430,15 +453,11 @@ function assert_properties(test){
           var t = tempS[propName];
           var c = compS[propName];
         }
-        console.log(t);
-        console.log(c);
         t = t.replace(/[^0-9.\s]/g, "").split(" ");
         c = c.replace(/[^0-9.\s]/g, "").split(" ");
-        console.log(t);
-        console.log(c);
         for (var x in t){
           test.test.step(function (){
-            assert_approx_equals(Number(c[x]), Number(t[x]), 12, propName +
+            assert_approx_equals(Number(c[x]), Number(t[x]), 12, "At time " + time + ", " + propName +
                 " is not correct. Target: " + t + " Current state: " + c);
           });
         }
@@ -475,6 +494,7 @@ window.setupTests = setupTests;
 window.check = check;
 window.runTests = runTests;
 window.restart = restart;
+window.toggleFlash = toggleFlash;
 window.animPause = animPause;
 window.setState = setState;
 })();
