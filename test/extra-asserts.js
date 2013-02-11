@@ -34,7 +34,7 @@ var testIndex = 0;
 var testPacket = [];
 
 // How long to show each manual check for.
-var pauseTime = 500;
+var pauseTime = 1000;
 // How long it takes an individual test to timeout.
 var testTimeout = 10000;
 // How long it takes for the whole test system to timeout.
@@ -388,13 +388,14 @@ function flashCleanUp(victim){
 
 function toggleFlash(){
   var elements = document.getElementsByClassName("flash");
-  if(elements[0] != null){
+  console.log(elements);
+  if(elements.length > 0){
     if (elements[0].style.display == 'block'){
-      for (var x in elements){
+      for (var x = 0; x < elements.length; x++){
         elements[x].style.display = 'none';
       }
     } else {
-      for (var x in elements){
+      for (var x = 0; x < elements.length; x++){
         elements[x].style.display = 'block';
       }
     }
@@ -447,18 +448,18 @@ function assert_properties(test){
         assert_transform(object, targets[propName], message);
       } else {
         if (isSVG){
-          var t = tempS[propName].value;
-          var c = compS[propName].value;
+          var tar = tempS[propName].value;
+          var curr = compS[propName].value;
         } else {
-          var t = tempS[propName];
-          var c = compS[propName];
+          var tar = tempS[propName];
+          var curr = compS[propName];
         }
-        t = t.replace(/[^0-9.\s]/g, "").split(" ");
-        c = c.replace(/[^0-9.\s]/g, "").split(" ");
+        var t = tar.replace(/[^0-9.\s]/g, "").split(" ");
+        var c = curr.replace(/[^0-9.\s]/g, "").split(" ");
         for (var x in t){
           test.test.step(function (){
             assert_approx_equals(Number(c[x]), Number(t[x]), 12, "At time " + time + ", " + propName +
-                " is not correct. Target: " + t + " Current state: " + c);
+                " is not correct. Target: " + tar + " Current state: " + curr);
           });
         }
       }
