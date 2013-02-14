@@ -1,0 +1,51 @@
+<!--
+Copyright 2012 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE html>
+<style>
+.anim {
+  left: 0px;
+  width: 100px;
+  height: 100px;
+  background-color: lightsteelblue;
+  position: absolute;
+}
+</style>
+
+<div id="a" class="anim"></div>
+
+<script src="web-animation.js"></script>
+<script>
+var a1 = new Animation(document.querySelector("#a"), {left: ["0px", "200px"]}, {duration: 1});
+
+// This shows that changing the currentTime during animation playing works
+window.setTimeout(function() {
+ console.log("Restarted.");
+  a1.currentTime = 0;
+}, 500);
+
+// This shows the problem with play not working after anim finished
+window.setTimeout(function() {
+ console.log("Timeout Reached, animation should play again now.");
+  a1.play();
+}, 3000);
+
+// This shows the problem with currentTime after the anim is finished
+window.setTimeout(function() {
+ console.log("Should restart again now.");
+  a1.currentTime = 0;
+}, 4000);
+</script>
